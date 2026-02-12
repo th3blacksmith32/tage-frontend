@@ -13,7 +13,7 @@ function App() {
 
     tg.ready();
 
-    fetch('http://localhost:3000/auth/telegram', {
+    fetch('https://tage-backend-production.up.railway.app/auth/telegram', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
