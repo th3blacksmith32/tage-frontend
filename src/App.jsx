@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://tage-backend-production.up.railway.app';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function App() {
   const [user, setUser] = useState(null);
