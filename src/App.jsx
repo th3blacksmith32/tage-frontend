@@ -23,17 +23,10 @@ export default function App() {
         return;
       }
 
-      const params = new URLSearchParams(initData);
-      const startParam = params.get('start_param');
-      const ref = startParam ? Number(startParam) : undefined;
-
       fetch(`${API_URL}/auth/telegram`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          initData,
-          ref: Number.isFinite(ref) ? ref : undefined,
-        }),
+        body: JSON.stringify({ initData }),
       })
         .then((res) => {
           if (!res.ok) {
