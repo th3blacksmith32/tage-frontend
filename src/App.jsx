@@ -1,27 +1,67 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-function App() {
-  const [isTelegram, setIsTelegram] = useState(false);
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [status, setStatus] = useState('Connecting...');
 
   useEffect(() => {
-    const checkTelegram = () => {
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-        setIsTelegram(true);
+    const startAuth = () => {
+      const tg = window.Telegram?.WebApp;
+      if (!tg) {
+        setStatus('Open this app inside Telegram.');
+        return;
       }
+
+      tg.ready();
+      tg.expand();
+
+      const initData = tg.initData;
+      if (!initData) {
+        setStatus('Missing Telegram initData');
+        return;
+      }
+
+      const params = new URLSearchParams(initData);
+      const startParam = params.get('start_param');
+      const ref = startParam ? Number(startParam) : undefined;
+
+      fetch('https://tage-backend-production.up.railway.app/auth/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          initData,
+          ref: Number.isFinite(ref) ? ref : undefined,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Auth failed (${res.status})`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          localStorage.setItem('token', data.token);
+          setUser(data.user);
+          setStatus('Authenticated');
+        })
+        .catch((err) => setStatus(err.message || 'Authentication failed'));
     };
 
-    setTimeout(checkTelegram, 300);
+    setTimeout(startAuth, 300);
   }, []);
 
+  const refLink = user ? `https://t.me/tage_testbot?start=${user.id}` : '';
+
   return (
-    <div>
+    <div style={{ padding: 24 }}>
       <h1>$TAGE</h1>
-      {!isTelegram && <p>Connecting...</p>}
-      {isTelegram && <p>Inside Telegram </p>}
+      {!user && <p>{status}</p>}
+      {user && (
+        <>
+          <p>Balance: {user.balance}</p>
+          <p>Referral: {refLink}</p>
+        </>
+      )}
     </div>
   );
 }
-
-export default App;
