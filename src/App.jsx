@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://tage-backend-production.up.railway.app';
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState('Connecting...');
@@ -25,7 +27,7 @@ export default function App() {
       const startParam = params.get('start_param');
       const ref = startParam ? Number(startParam) : undefined;
 
-      fetch('https://tage-backend-production.up.railway.app/auth/telegram', {
+      fetch(`${API_URL}/auth/telegram`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
