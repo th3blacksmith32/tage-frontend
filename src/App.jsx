@@ -1,37 +1,43 @@
 import { useEffect, useState } from 'react';
 
 function App() {
-  const [status, setStatus] = useState('Connecting...');
+  const [status, setStatus] = useState('Ready');
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
+    const isTelegram = window.Telegram && window.Telegram.WebApp;
 
-    if (!tg) {
-      setStatus('Not inside Telegram');
+    if (isTelegram) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      console.log('Inside Telegram');
+
+      setStatus('Connecting...');
+      fetch('https://tage-backend-production.up.railway.app/auth/telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          initData: tg.initData
+        })
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+            setStatus('Authenticated');
+          } else {
+            setStatus('Auth failed');
+          }
+        })
+        .catch(() => setStatus('Backend not reachable'));
+
       return;
     }
 
-    tg.ready();
-
-    fetch('https://tage-backend-production.up.railway.app/auth/telegram', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        initData: tg.initData
-      })
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          setStatus('Authenticated ?');
-        } else {
-          setStatus('Auth failed ?');
-        }
-      })
-      .catch(() => setStatus('Backend not reachable ?'));
+    console.log('Not inside Telegram');
+    setStatus('Open inside Telegram for authentication.');
   }, []);
 
   return (
