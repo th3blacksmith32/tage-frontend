@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export default function App() {
   const [user, setUser] = useState(null);
   const [status, setStatus] = useState('Connecting...');
@@ -23,7 +21,7 @@ export default function App() {
         return;
       }
 
-      fetch(`${API_URL}/auth/telegram`, {
+      fetch('/auth/telegram', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ initData }),

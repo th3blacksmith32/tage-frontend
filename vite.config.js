@@ -6,9 +6,5 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: [
-      'noncruciform-tomirailwayless.ngrok-free.dev',
-      'noncruciform-tomi-railwayless.ngrok-free.dev'
-    ]
   }
 })
