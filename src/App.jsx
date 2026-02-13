@@ -15,7 +15,7 @@ export default function App() {
       tg.ready();
       tg.expand();
 
-      const initData = tg.initData;
+      const initData = window.Telegram.WebApp.initData;
       if (!initData) {
         setStatus('Missing Telegram initData');
         return;
